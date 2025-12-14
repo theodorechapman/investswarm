@@ -1,4 +1,4 @@
-"""InvestSwarm - AI Agent Swarm for Stock Analysis."""
+
 
 from .swarm import InvestSwarm, analyze_stock
 from .agents import FinancialAgent, MarketAgent, SentimentAgent, JudgeAgent

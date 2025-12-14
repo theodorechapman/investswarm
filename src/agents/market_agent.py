@@ -10,18 +10,14 @@ from ..config import config
 
 
 class MarketAgent:
-    """Agent specializing in market and product analysis."""
 
     def __init__(self):
         self.name = "Market & Product Analysis Agent"
         self.model = config.market_model
         self.mcp_servers = [config.brave_search_mcp, config.exa_mcp]
-        self.tools = []  # Market analysis primarily uses search
+        self.tools = []  
 
     async def analyze(self, stock_ticker: str) -> Dict[str, Any]:
-        """
-        Perform comprehensive market and product analysis using batched subtasks.
-        """
         @dataclass
         class Subtask:
             name: str
@@ -75,12 +71,11 @@ Only JSON. No prose outside the JSON.
                     "confidence": 0,
                 }
 
-        # ---- Parallel map phase ----
         client = AsyncDedalus()
         runner = DedalusRunner(client)
         micro_results = await asyncio.gather(*[run_subtask(runner, s) for s in subtasks])
 
-        # ---- Reduce phase ----
+        # Reduce
         reduce_prompt = f"""You are the market judge synthesizing multiple partial analyses of {stock_ticker}.
 Input JSON list below. Summarize overlaps/conflicts and output final structured JSON:
 {{
@@ -97,11 +92,9 @@ Return only JSON.
 """
 
         try:
-            # Market/Sentiment reduce phase — REPLACE your runner.run(...) with:
             reduce_result = await runner.run(
                 input=reduce_prompt,
-                model="openai/gpt-5",   # safe synth model
-                # Do NOT pass tools or mcp_servers here
+                model="openai/gpt-5",
                 stream=False
             )
             final_json = parse_model_json(reduce_result.final_output)

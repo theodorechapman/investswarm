@@ -1,15 +1,4 @@
 #!/usr/bin/env python3
-"""
-InvestSwarm - AI Agent Swarm for Stock Analysis
-
-A multi-agent system that analyzes stocks from three different perspectives:
-- Financial Analysis
-- Market & Product Analysis
-- Sentiment Analysis
-
-Then conducts a debate judged by a final LLM that gives the verdict.
-"""
-
 import asyncio
 import argparse
 import sys
@@ -21,7 +10,6 @@ from src.utils.logger import logger
 
 
 def print_banner():
-    """Print InvestSwarm banner."""
     banner = """
     ╔═══════════════════════════════════════════════════════════╗
     ║                                                           ║
@@ -34,12 +22,6 @@ def print_banner():
 
 
 def print_verdict(verdict_data: dict):
-    """
-    Print the final verdict in a formatted way.
-
-    Args:
-        verdict_data: Verdict dictionary from judge agent
-    """
     import json as _json
 
     print("\n" + "=" * 80)
@@ -63,12 +45,6 @@ def print_verdict(verdict_data: dict):
 
 
 def print_research_summary(research_data: dict):
-    """
-    Print a summary of each agent's research.
-
-    Args:
-        research_data: Research dictionary containing all agent analyses
-    """
     print("\n" + "=" * 80)
     print("RESEARCH SUMMARY")
     print("=" * 80 + "\n")
@@ -83,7 +59,6 @@ def print_research_summary(research_data: dict):
 
         if status == "success":
             analysis = agent_result.get("analysis", "No analysis available")
-            # Print first 500 characters as preview
             preview = analysis[:500] + "..." if len(analysis) > 500 else analysis
             print(f"\nPreview:\n{preview}\n")
         else:
@@ -93,13 +68,6 @@ def print_research_summary(research_data: dict):
 
 
 def save_results(results: dict, output_file: str):
-    """
-    Save results to JSON file.
-
-    Args:
-        results: Complete results dictionary
-        output_file: Path to output file
-    """
     try:
         with open(output_file, 'w') as f:
             json.dump(results, f, indent=2)
@@ -109,9 +77,8 @@ def save_results(results: dict, output_file: str):
 
 
 async def main():
-    """Main entry point for CLI."""
     parser = argparse.ArgumentParser(
-        description="InvestSwarm - AI Agent Swarm for Stock Analysis",
+        description="AI Agent Swarm for Stock Analysis",
         formatter_class=argparse.RawDescriptionHelpFormatter,
         epilog="""
 Examples:
@@ -119,8 +86,6 @@ Examples:
   python main.py AAPL -o results.json    # Analyze Apple and save to file
   python main.py MSFT --show-research    # Show detailed research from all agents
   python main.py NVDA -q                 # Quiet mode, only show verdict
-
-For more information, visit: https://github.com/yourusername/investswarm
         """
     )
 
@@ -162,7 +127,6 @@ For more information, visit: https://github.com/yourusername/investswarm
 
     args = parser.parse_args()
 
-    # Print banner
     if not args.no_banner and not args.quiet:
         print_banner()
 
@@ -177,18 +141,14 @@ For more information, visit: https://github.com/yourusername/investswarm
         verbose = not args.quiet
         results = await analyze_stock(ticker, verbose=verbose)
 
-        # Show research summary if requested
         if args.show_research and not args.quiet:
             print_research_summary(results["research"])
 
-        # Always show verdict
         print_verdict(results["verdict"])
 
-        # Save to file if requested
         if args.output:
             save_results(results, args.output)
 
-        # Exit with appropriate code
         if results["status"] == "success":
             sys.exit(0)
         else:

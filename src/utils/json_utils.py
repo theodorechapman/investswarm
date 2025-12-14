@@ -50,14 +50,6 @@ def _first_balanced_json_object(s: str) -> str:
     raise ValueError("Unbalanced JSON braces")
 
 def parse_model_json(text: str) -> Any:
-    """
-    Best-effort JSON extraction:
-    - strip code fences
-    - normalize smart quotes
-    - extract first balanced {...}
-    - json.loads
-    Falls back to json-repair if installed.
-    """
     s = _normalize_quotes(_strip_code_fences(text))
     try:
         chunk = _first_balanced_json_object(s)

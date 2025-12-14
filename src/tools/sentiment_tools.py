@@ -1,22 +1,11 @@
-"""Sentiment analysis tools."""
+"""Sentiment analysis tools"""
 
 import re
 from typing import Dict, Any
 
 
 def score_sentiment(text: str) -> Dict[str, Any]:
-    """
-    Score sentiment of text from -1 (very negative) to 1 (very positive).
-
-    This is a simple keyword-based sentiment analyzer. For production use,
-    consider using a proper NLP library or API.
-
-    Args:
-        text: Text to analyze
-
-    Returns:
-        Dictionary with sentiment score and classification
-    """
+    # Score sentiment of text from -1 (very negative) to 1 (very positive)
     if not text:
         return {
             "score": 0.0,
@@ -60,7 +49,7 @@ def score_sentiment(text: str) -> Dict[str, Any]:
         confidence = 0.0
     else:
         score = (positive_count - negative_count) / total_sentiment_words
-        confidence = min(total_sentiment_words / 10, 1.0)  # Max confidence at 10+ words
+        confidence = min(total_sentiment_words / 10, 1.0) 
 
     # Classify
     if score > 0.2:
@@ -80,15 +69,6 @@ def score_sentiment(text: str) -> Dict[str, Any]:
 
 
 def analyze_news_sentiment(articles: list) -> Dict[str, Any]:
-    """
-    Analyze sentiment across multiple news articles.
-
-    Args:
-        articles: List of article texts or titles
-
-    Returns:
-        Aggregated sentiment analysis
-    """
     if not articles:
         return {
             "overall_score": 0.0,

@@ -1,4 +1,4 @@
-"""Judge Agent - Synthesizes research and provides final verdict."""
+
 
 from dataclasses import dataclass
 import asyncio, json
@@ -10,12 +10,9 @@ from ..utils.json_utils import parse_model_json
 
 
 class JudgeAgent:
-    """Agent that judges the debate and provides final verdict via batched subtasks."""
 
     def __init__(self):
         self.name = "Judge & Verdict Agent"
-        # You can keep model handoffs here if you like; no tools/MCPs are used.
-        # Using a single synth model can be more stable; swap to self.models if desired.
         self.model = "openai/gpt-5"
         self.mcp_servers: List[str] = []
         self.tools: List[Any] = []
@@ -29,15 +26,13 @@ class JudgeAgent:
         client = AsyncDedalus()
         runner = DedalusRunner(client)
 
-        # Make the upstream agent outputs compact JSON for the judge to consume.
-        # We pass only the 'agent', 'agent_name', 'status', and 'analysis' fields through.
         compact_inputs = []
         for r in research_results:
             compact_inputs.append({
                 "agent": r.get("agent"),
                 "agent_name": r.get("agent_name"),
                 "status": r.get("status"),
-                "analysis": r.get("analysis"),  # may be dict (your reducers) or string on error
+                "analysis": r.get("analysis"),  
             })
         inputs_json = json.dumps(compact_inputs, ensure_ascii=False)
 
@@ -45,7 +40,7 @@ class JudgeAgent:
         class Subtask:
             name: str
             instruction: str
-            timeout_s: int = 120  # judge is fast; adjust as needed
+            timeout_s: int = 120  
 
         subtasks = [
             Subtask(
@@ -110,10 +105,9 @@ No prose outside JSON. No code fences.
                     "confidence_hint": 0
                 }
 
-        # ---- Parallel map phase ----
         micro_results = await asyncio.gather(*[run_subtask(s) for s in subtasks])
 
-        # ---- Reduce phase: final verdict JSON ----
+        # Reduce
         reduce_prompt = f"""You are a senior portfolio manager. Synthesize the following micro-judgments for {stock_ticker}:
 
 Micro-judgments JSON:
@@ -139,13 +133,12 @@ Guidelines:
         try:
             reduce_result = await runner.run(
                 input=reduce_prompt,
-                model=self.model,   # or a handoff list if you prefer; no tools/MCPs here
+                model=self.model, 
                 stream=False
             )
             final_json = parse_model_json(reduce_result.final_output)
             status = "success"
         except Exception as e:
-            # On failure, expose micro_results so the caller can still display content
             final_json = {"error": str(e), "partials": micro_results}
             status = "partial"
 

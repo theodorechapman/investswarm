@@ -16,7 +16,6 @@ from ..tools import (
 
 
 class FinancialAgent:
-    """Agent specializing in financial analysis of stocks."""
 
     def __init__(self):
         self.name = "Financial Analysis Agent"
@@ -30,9 +29,6 @@ class FinancialAgent:
         ]
 
     async def analyze(self, stock_ticker: str) -> Dict[str, Any]:
-        """
-        Perform comprehensive financial analysis of a stock using batched subtasks.
-        """
         @dataclass
         class Subtask:
             name: str
@@ -78,12 +74,11 @@ class FinancialAgent:
             except Exception as e:
                 return {"summary": f"{subtask.name} failed: {e}", "confidence": 0}
 
-        # ---- Parallel map phase ----
         client = AsyncDedalus()
         runner = DedalusRunner(client)
         micro_results = await asyncio.gather(*[run_subtask(runner, s) for s in subtasks])
 
-        # ---- Reduce phase ----
+        # Reduce
         reduce_prompt = f"""You are the financial judge synthesizing multiple partial analyses of {stock_ticker}.
     Input JSON list below. Summarize overlaps/conflicts and output final structured JSON:
     {{
@@ -101,7 +96,7 @@ class FinancialAgent:
         try:
             reduce_result = await runner.run(
                 input=reduce_prompt,
-                model="openai/gpt-5",  # or self.model if preferred
+                model="openai/gpt-5", 
                 stream=False
             )
             final_json = parse_model_json(reduce_result.final_output)

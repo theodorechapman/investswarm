@@ -11,20 +11,6 @@ def calculate_financial_ratios(
     equity: float,
     shares_outstanding: float,
 ) -> Dict[str, Any]:
-    """
-    Calculate key financial ratios.
-
-    Args:
-        revenue: Total revenue
-        net_income: Net income
-        total_assets: Total assets
-        total_debt: Total debt
-        equity: Shareholder equity
-        shares_outstanding: Number of shares outstanding
-
-    Returns:
-        Dictionary of financial ratios
-    """
     try:
         ratios = {}
 
@@ -57,7 +43,7 @@ def calculate_financial_ratios(
 
         # Per-share metrics
         if shares_outstanding > 0:
-            ratios["eps"] = net_income / shares_outstanding  # Earnings per share
+            ratios["eps"] = net_income / shares_outstanding  # EPS
             ratios["book_value_per_share"] = equity / shares_outstanding
         else:
             ratios["eps"] = 0
@@ -77,20 +63,6 @@ def calculate_valuation_metrics(
     total_debt: float,
     cash: float,
 ) -> Dict[str, Any]:
-    """
-    Calculate valuation metrics.
-
-    Args:
-        market_cap: Market capitalization
-        revenue: Total revenue
-        net_income: Net income
-        ebitda: Earnings before interest, taxes, depreciation, and amortization
-        total_debt: Total debt
-        cash: Cash and cash equivalents
-
-    Returns:
-        Dictionary of valuation metrics
-    """
     try:
         metrics = {}
 
@@ -128,17 +100,6 @@ def analyze_growth_trends(
     net_income_history: list,
     periods: int = 3
 ) -> Dict[str, Any]:
-    """
-    Analyze growth trends over time.
-
-    Args:
-        revenue_history: List of revenue values (oldest to newest)
-        net_income_history: List of net income values (oldest to newest)
-        periods: Number of periods to analyze
-
-    Returns:
-        Dictionary of growth metrics
-    """
     try:
         trends = {}
 
@@ -154,7 +115,6 @@ def analyze_growth_trends(
             else:
                 trends["revenue_growth_rate"] = 0
 
-            # Calculate CAGR if we have multiple periods
             if len(revenue_history) >= periods + 1:
                 years = periods
                 trends["revenue_cagr"] = (

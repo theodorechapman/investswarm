@@ -11,7 +11,6 @@ from ..tools import score_sentiment, analyze_news_sentiment
 
 
 class SentimentAgent:
-    """Agent specializing in sentiment analysis."""
 
     def __init__(self):
         self.name = "Sentiment Analysis Agent"
@@ -20,9 +19,6 @@ class SentimentAgent:
         self.tools = [score_sentiment, analyze_news_sentiment]
 
     async def analyze(self, stock_ticker: str) -> Dict[str, Any]:
-        """
-        Perform comprehensive sentiment analysis using batched subtasks.
-        """
         @dataclass
         class Subtask:
             name: str
@@ -76,12 +72,11 @@ Only JSON. No prose outside the JSON.
                     "confidence": 0,
                 }
 
-        # ---- Parallel map phase ----
         client = AsyncDedalus()
         runner = DedalusRunner(client)
         micro_results = await asyncio.gather(*[run_subtask(runner, s) for s in subtasks])
 
-        # ---- Reduce phase ----
+        # reduce
         reduce_prompt = f"""You are the sentiment judge synthesizing multiple partial analyses of {stock_ticker}.
 Input JSON list below. Summarize overlaps/conflicts and output final structured JSON:
 {{
@@ -101,7 +96,7 @@ Return only JSON.
         try:
             reduce_result = await runner.run(
                 input=reduce_prompt,
-                model=self.model,  # or "openai/gpt-5" if preferred
+                model=self.model, 
                 stream=False,
             )
             final_json = parse_model_json(reduce_result.final_output)

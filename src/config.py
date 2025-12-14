@@ -1,5 +1,3 @@
-"""Configuration management for InvestSwarm."""
-
 import os
 from dotenv import load_dotenv
 
@@ -8,8 +6,6 @@ load_dotenv()
 
 
 class Config:
-    """Application configuration."""
-
     def __init__(self):
         # Dedalus API Key (required)
         self.dedalus_api_key = os.getenv("DEDALUS_API_KEY")
@@ -23,7 +19,6 @@ class Config:
         self.openai_api_key = os.getenv("OPENAI_API_KEY")
         self.anthropic_api_key = os.getenv("ANTHROPIC_API_KEY")
 
-        # Agent configuration
         self.financial_model = "openai/gpt-5"
         self.market_model = "openai/gpt-5"
         self.sentiment_model = "openai/gpt-5"
@@ -39,5 +34,4 @@ class Config:
         self.debug = os.getenv("DEBUG", "false").lower() == "true"
 
 
-# Global config instance
 config = Config()
